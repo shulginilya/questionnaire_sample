@@ -1,17 +1,16 @@
 import { useAppSelector, useAppDispatch } from "@/appStore/hooks";
 import {
-	incrementByAmount,
+	mutateQuestions,
 	selectCount,
-} from "@/appStore/reducers/demoSlice";
+} from "@/appStore/reducers/questionsSlice";
 import styles from './questions_container.module.scss';
 
 const QuestionsContainer: React.FC = () => {
-	const value = useAppSelector(selectCount);
+	const questions = useAppSelector(selectCount);
+	console.log(questions);
 	const dispatch = useAppDispatch();
 	return (
 		<section className={styles.questions_container}>
-			{value}
-			<button onClick={() => dispatch(incrementByAmount(4))}>Incremenet</button>
 		</section>
 	)
 };
