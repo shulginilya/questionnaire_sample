@@ -22,7 +22,7 @@ interface ValidationObject {
     [key: string]: string | number;
 };
 
-interface ValueObject {
+export interface ValueObject {
     [key: string]: string | number;
 };
 
