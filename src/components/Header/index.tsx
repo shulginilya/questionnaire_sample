@@ -1,7 +1,14 @@
 import styles from './header.module.scss';
 
-const Header: React.FC = () => (
+interface HeaderType {
+	title: string;
+};
+
+const Header: React.FC<HeaderType> = ({
+	title
+}) => (
 	<header data-testid="header" className={styles.header}>
+		{title}
 	</header>
 );
 
