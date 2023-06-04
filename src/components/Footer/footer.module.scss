@@ -1,5 +1,14 @@
 @use '@/styles/variables' as *;
 
 .footer {
-    display: block;
+    position: absolute;
+    bottom: 0;
+    padding: 0 $footer_header_horizontal_padding_mobile;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: $base-blue;
+    height: $footer_header_height;
+    width: 100%;
+    color: $white;
 }
