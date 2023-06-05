@@ -100,7 +100,12 @@ const Question: React.FC<QuestionComponentType> = ({
 			case QuestionTypes.text: {
 				return (
 					<div className={`${styles.question_type} ${styles.question_type_text}`}>
-						<input type='text' onChange={(e) => updateQuestionValue(e)} />
+						<input
+							className={styles.question_type_text__input}
+							type='text'
+							defaultValue={question.value || ''}
+							onChange={(e) => updateQuestionValue(e)}
+						/>
 					</div>
 				);
 			}
@@ -109,15 +114,25 @@ const Question: React.FC<QuestionComponentType> = ({
 					<div className={`${styles.question_type} ${styles.question_type_checkbox}`}>
 						{
 							question.options.map((option) => (
-								<label htmlFor={`${question.id}_${option.key}`} key={option.key}>
+								<div
+									key={option.key}
+									className={styles.question_type_checkbox__block}
+								>
 									<input
+										className={styles.question_type_checkbox__block__input}
 										id={`${question.id}_${option.key}`}
 										value={option.text}
 										onChange={(e) => updateQuestionValue(e)}
 										type="checkbox"
 									/>
-									{option.text}
-								</label>
+									<label
+										className={styles.question_type_checkbox__block__label}
+										htmlFor={`${question.id}_${option.key}`}
+										key={option.key}
+									>
+										{option.text}
+									</label>
+								</div>
 							))
 						}
 					</div>
@@ -125,15 +140,25 @@ const Question: React.FC<QuestionComponentType> = ({
 			}
 			case QuestionTypes.date: {
 				return (
-					<div className={`${styles.question_type} ${styles.question_type_date}`}>
-						<input type='date' onChange={(e) => updateQuestionValue(e)} />
+					<div className={`${styles.question_type} ${styles.question_type_text}`}>
+						<input
+							className={styles.question_type_text__input}
+							type='date'
+							defaultValue={question.value || ''}
+							onChange={(e) => updateQuestionValue(e)}
+						/>
 					</div>
 				);
 			}
 			case QuestionTypes.number: {
 				return (
 					<div className={`${styles.question_type} ${styles.question_type_text}`}>
-						<input type='number' onChange={(e) => updateQuestionValue(e)} />
+						<input
+							className={styles.question_type_text__input}
+							type='number'
+							defaultValue={question.value || ''}
+							onChange={(e) => updateQuestionValue(e)}
+						/>
 					</div>
 				);
 			}
@@ -142,16 +167,24 @@ const Question: React.FC<QuestionComponentType> = ({
 					<div className={`${styles.question_type} ${styles.question_type_radio}`}>
 						{
 							question.options.map((option) => (
-								<label htmlFor={`${question.id}_${option.key}`} key={option.key}>
+								<div
+									key={option.key}
+									className={styles.question_type_radio__block}
+								>
 									<input
+										className={styles.question_type_radio__block__input}
 										id={`${question.id}_${option.key}`}
 										name={`${question.id}_radio`}
 										value={option.text}
 										onChange={(e) => updateQuestionValue(e)}
 										type="radio"
 									/>
-									{option.text}
-								</label>
+    								<label
+										className={styles.question_type_radio__block__label}
+										key={option.key}
+										htmlFor={`${question.id}_${option.key}`}
+									>{option.text}</label>
+								</div>
 							))
 						}
 					</div>
@@ -159,8 +192,13 @@ const Question: React.FC<QuestionComponentType> = ({
 			}
 			case QuestionTypes.select: {
 				return (
-					<div className={`${styles.question_type} ${styles.question_type_select}`}>
-						<select onChange={(e) => updateQuestionValue(e)}>
+					<div
+						className={`${styles.question_type} ${styles.question_type_select}`}
+					>
+						<select 
+							className={styles.question_type_select__input}
+							onChange={(e) => updateQuestionValue(e)}
+						>
 							{
 								question.options.map((option) => (
 									<option key={option.key} value={option.key}>{option.text}</option>
@@ -194,7 +232,13 @@ const Question: React.FC<QuestionComponentType> = ({
 						{
 							isExpanded ? (
 								<div className={styles.question__content}>
-									<p className={styles.question__content__title}>{question.title}</p>
+									<div className={styles.question__content__title}>
+										<p className={styles.question__content__title__text}>{question.title}</p>
+										<button
+											className={styles.question__content__title__cnt}
+											onClick={() => setExpanded(!isExpanded)}
+										>Close</button>
+									</div>
 									<p className={styles.question__content__desc}>{question.desc}</p>
 									<div className={styles.question__content__question_body}>{generateAnswerOption()}</div>
 									<div className={styles.question__content__cta}>
