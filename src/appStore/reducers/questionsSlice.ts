@@ -1,16 +1,11 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "@/appStore/store";
 import { generateUniqueId } from '@/utils/commonUtils';
-import { QuestionType, QuestionTypes, ValueObject } from '@/types';
-
-interface initialStateType {
-    questions: QuestionType[]
-};
-
-interface QuestionActionPayloadType {
-    id: string;
-    value: ValueObject;
-};
+import {
+    QuestionTypes,
+    initialStateType,
+    QuestionActionPayloadType
+} from '@/types';
 
 const initialState: initialStateType = {
     questions: [
@@ -158,27 +153,17 @@ export const questionsSlice = createSlice({
     name: "questions",
     initialState,
     reducers: {
-        mutateQuestions: (state, action: PayloadAction<QuestionActionPayloadType>) => {
-            state.questions = { ...state.questions , ...action.payload};
-            // const { id, value } = action.payload;
-            // const mutateIndex = state.questions.findIndex(s => s.id === id);
-            // if (mutateIndex > -1) {
-            //     // @ts-ignore
-            //     state.questions[mutateIndex].value = value;
-            // }
-        },
-        resetQuestions: (state) => {
-            state.questions = state.questions.map(s => {
-                const resetValueObject = {
-                    value: null
-                };
-                return { ...s, ...resetValueObject };
-            });
+        mutateQuestion: (state, action: PayloadAction<QuestionActionPayloadType>) => {
+            const { id, value } = action.payload;
+            const questionIndex = state.questions.findIndex(q => q.id === id);
+            if (questionIndex > -1) {
+                state.questions[questionIndex].value = value;
+            }
         }
     }
 });
 
-export const { mutateQuestions, resetQuestions } = questionsSlice.actions;
+export const { mutateQuestion } = questionsSlice.actions;
 
 export const selectCount = (state: RootState) => state.counter.questions;
 

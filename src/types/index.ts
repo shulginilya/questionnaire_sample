@@ -4,7 +4,7 @@ export interface QuestionType {
     desc: string;
     type: QuestionTypes.text | QuestionTypes.radio | QuestionTypes.date | QuestionTypes.checkbox | QuestionTypes.select | QuestionTypes.number;
     options: OptionsObject[] | [];
-    value: ValueObject[] | null;
+    value: string | number | null;
     enabled: boolean;
     validations: ValidationObject[];
 };
@@ -22,10 +22,15 @@ interface ValidationObject {
     [key: string]: string | number;
 };
 
-export interface ValueObject {
+interface OptionsObject {
     [key: string]: string | number;
 };
 
-interface OptionsObject {
-    [key: string]: string | number;
+export interface initialStateType {
+    questions: QuestionType[]
+};
+
+export interface QuestionActionPayloadType {
+    id: string;
+    value: string | number | null;
 };

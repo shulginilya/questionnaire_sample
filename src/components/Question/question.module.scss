@@ -2,4 +2,62 @@
 
 .question {
     display: block;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+    border-bottom: solid 1px $grey;
+    &__preview {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        &__title {
+            font-weight: 600;
+        }
+        &__answer {
+            opacity: .6;
+        }
+        &__sign {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: $base-blue;
+            &_answered {
+                background-color: $base-green;
+            }
+        }
+    }
+    &__content {
+        &__title {
+            font-size: 18px;
+            color: $dark-blue;
+            margin-bottom: 10px;
+        }
+        &__desc {
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+        &__question_body {
+            margin-bottom: 15px;
+        }
+        &__cta {
+            display: flex;
+            &__btn {
+                height: 40px;
+                border: none;
+                border-radius: 4px;
+                width: 60px;
+                background-color: $base-blue;
+                color: $white;
+                cursor: pointer;
+                margin-right: 15px;
+                &_transparent {
+                    color: $base-blue;
+                    background-color: $white;
+                }
+                &:last-child {
+                    margin-right: 0;
+                }
+            }
+        }
+    }
+
 }
