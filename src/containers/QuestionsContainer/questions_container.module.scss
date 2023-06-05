@@ -1,5 +1,5 @@
 @use '@/styles/variables' as *;
 
 .questions_container {
-    padding: calc($footer_header_height + 15px) 15px calc($footer_header_height + 15px);
+    padding: calc($header_height + 15px) 15px calc($header_height + 15px);
 }

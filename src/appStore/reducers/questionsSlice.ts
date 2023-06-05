@@ -159,11 +159,20 @@ export const questionsSlice = createSlice({
             if (questionIndex > -1) {
                 state.questions[questionIndex] = Object.assign({}, state.questions[questionIndex], mutateObject);
             }
+        },
+        reset: (state) => {
+            const resetQuestions = state.questions.map(q => {
+                const valueObject = {
+                    value: null
+                };
+                return { ...q, ...valueObject};
+            });
+            state.questions = resetQuestions;
         }
     }
 });
 
-export const { mutateQuestion } = questionsSlice.actions;
+export const { mutateQuestion, reset } = questionsSlice.actions;
 
 export const selectCount = (state: RootState) => state.counter.questions;
 

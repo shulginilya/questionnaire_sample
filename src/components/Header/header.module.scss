@@ -3,12 +3,20 @@
 .header {
     position: absolute;
     top: 0;
-    padding: 0 $footer_header_horizontal_padding_mobile;
+    padding: 0 15px;
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
     background-color: $base-blue;
-    height: $footer_header_height;
+    height: $header_height;
     width: 100%;
     color: $white;
+    &__cta {
+        border: none;
+        border-radius: 4px;
+        padding: 10px;
+        background-color: $white;
+        color: $base-blue;
+        cursor: pointer;
+    }
 }

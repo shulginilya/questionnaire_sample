@@ -1,21 +1,29 @@
 import Header from '@/components/Header';
-// import ControlPanel from '@/components/ControlPanel';
 import Question from '@/components/Question';
 import { QuestionActionPayloadType } from '@/types';
 import { useAppSelector, useAppDispatch } from "@/appStore/hooks";
 import {
 	selectCount,
-	mutateQuestion
+	mutateQuestion,
+	reset
 } from "@/appStore/reducers/questionsSlice";
 import styles from './questions_container.module.scss';
 
 const QuestionsContainer: React.FC = () => {
 	const questions = useAppSelector(selectCount);
 	const dispatch = useAppDispatch();
+	/*
+		We define question mutators (reset whole app and mutate questions)
+	*/
 	const mutateQuestionDispatcher = (payload: QuestionActionPayloadType) => {
 		dispatch(mutateQuestion(payload));
 	};
-	// detect the first unanswered question
+	const restartQuestionnaire = () => {
+		dispatch(reset());
+	};
+	/*
+		Detect the first unanswered question
+	*/
 	let isFirstUnansweredQuestionÍd: string | null = null;
 	for (let i = 0; i < questions.length; i++) {
 		const hashQuestion = questions[i];
@@ -24,16 +32,20 @@ const QuestionsContainer: React.FC = () => {
 			break;
 		}
 	}
-	// render component
+	/*
+		Render component
+	*/
 	return (
 		<>
-			<Header title="Questionnaire" />
+			<Header
+				title="Questionnaire"
+				restartQuestionnaire={restartQuestionnaire}
+			/>
 			<section className={styles.questions_container}>
 				{
 					questions.map(q => <Question key={q.id} question={q} isFirstUnansweredQuestionÍd={isFirstUnansweredQuestionÍd} mutateQuestionDispatcher={mutateQuestionDispatcher} />)
 				}
 			</section>
-			{/* <ControlPanel /> */}
 		</>
 	)
 };
