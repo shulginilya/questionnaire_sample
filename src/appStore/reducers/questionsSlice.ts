@@ -154,10 +154,10 @@ export const questionsSlice = createSlice({
     initialState,
     reducers: {
         mutateQuestion: (state, action: PayloadAction<QuestionActionPayloadType>) => {
-            const { id, value } = action.payload;
+            const { id, mutateObject } = action.payload;
             const questionIndex = state.questions.findIndex(q => q.id === id);
             if (questionIndex > -1) {
-                state.questions[questionIndex].value = value;
+                state.questions[questionIndex] = Object.assign({}, state.questions[questionIndex], mutateObject);
             }
         }
     }

@@ -3,10 +3,10 @@ export interface QuestionType {
     title: string;
     desc: string;
     type: QuestionTypes.text | QuestionTypes.radio | QuestionTypes.date | QuestionTypes.checkbox | QuestionTypes.select | QuestionTypes.number;
-    options: OptionsObject[] | [];
-    value: string | number | null;
+    options: GenericObjectType[] | [];
+    value: QuestionValueType;
     enabled: boolean;
-    validations: ValidationObject[];
+    validations: GenericObjectType[];
 };
 
 export enum QuestionTypes {
@@ -18,19 +18,19 @@ export enum QuestionTypes {
     number = 'NUMBER'
 };
 
-interface ValidationObject {
-    [key: string]: string | number;
-};
-
-interface OptionsObject {
-    [key: string]: string | number;
-};
-
 export interface initialStateType {
     questions: QuestionType[]
 };
 
 export interface QuestionActionPayloadType {
     id: string;
-    value: string | number | null;
+    mutateObject: GenericObjectType
+};
+
+// export type QuestionValueType = string[] | number[] | [];
+
+export type QuestionValueType = string | number | null;
+
+interface GenericObjectType {
+    [key: string]: any;
 };

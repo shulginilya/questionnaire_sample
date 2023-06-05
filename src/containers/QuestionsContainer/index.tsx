@@ -1,5 +1,5 @@
 import Header from '@/components/Header';
-import ControlPanel from '@/components/ControlPanel';
+// import ControlPanel from '@/components/ControlPanel';
 import Question from '@/components/Question';
 import { QuestionActionPayloadType } from '@/types';
 import { useAppSelector, useAppDispatch } from "@/appStore/hooks";
@@ -19,7 +19,7 @@ const QuestionsContainer: React.FC = () => {
 	let isFirstUnansweredQuestionÍd: string | null = null;
 	for (let i = 0; i < questions.length; i++) {
 		const hashQuestion = questions[i];
-		if (hashQuestion.value === null) {
+		if (!hashQuestion.value) {
 			isFirstUnansweredQuestionÍd = hashQuestion.id;
 			break;
 		}
@@ -33,7 +33,7 @@ const QuestionsContainer: React.FC = () => {
 					questions.map(q => <Question key={q.id} question={q} isFirstUnansweredQuestionÍd={isFirstUnansweredQuestionÍd} mutateQuestionDispatcher={mutateQuestionDispatcher} />)
 				}
 			</section>
-			<ControlPanel />
+			{/* <ControlPanel /> */}
 		</>
 	)
 };
