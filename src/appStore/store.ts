@@ -1,9 +1,9 @@
 import { configureStore, ThunkAction, Action } from "@reduxjs/toolkit";
-import demoReducer from "@/appStore/reducers/questionsSlice";
+import questionsReducer from "@/appStore/reducers/questionsSlice";
 
 export const store = configureStore({
     reducer: {
-        counter: demoReducer,
+        questionnaire: questionsReducer,
     },
 });
 

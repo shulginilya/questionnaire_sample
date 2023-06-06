@@ -5,12 +5,16 @@ import { useAppSelector, useAppDispatch } from "@/appStore/hooks";
 import {
 	selectQuestions,
 	mutateQuestion,
-	reset
+	reset,
+	selectCurrentOpenedQuestionId,
+	selectPreviouslyOpenedQuestionId
 } from "@/appStore/reducers/questionsSlice";
 import styles from './questions_container.module.scss';
 
 const QuestionsContainer: React.FC = () => {
 	const questions = useAppSelector(selectQuestions);
+	const currentlyOpenedQuestionId = useAppSelector(selectCurrentOpenedQuestionId);
+	const previouslyOpenedQuestionId = useAppSelector(selectPreviouslyOpenedQuestionId);
 	const dispatch = useAppDispatch();
 	/*
 		We define question mutators (reset whole app and mutate questions)
@@ -22,17 +26,6 @@ const QuestionsContainer: React.FC = () => {
 		dispatch(reset());
 	};
 	/*
-		Detect the first unanswered question
-	*/
-	let isFirstUnansweredQuestionÍd: string | null = null;
-	for (let i = 0; i < questions.length; i++) {
-		const hashQuestion = questions[i];
-		if (hashQuestion.value === null) {
-			isFirstUnansweredQuestionÍd = hashQuestion.id;
-			break;
-		}
-	}
-	/*
 		Render component
 	*/
 	return (
@@ -43,7 +36,15 @@ const QuestionsContainer: React.FC = () => {
 			/>
 			<section className={styles.questions_container}>
 				{
-					questions.map(q => <Question key={q.id} question={q} isFirstUnansweredQuestionÍd={isFirstUnansweredQuestionÍd} mutateQuestionDispatcher={mutateQuestionDispatcher} />)
+					questions.map(q =>
+						<Question
+							key={q.id}
+							question={q}
+							currentlyOpenedQuestionId={currentlyOpenedQuestionId}
+							previouslyOpenedQuestionId={previouslyOpenedQuestionId}
+							mutateQuestionDispatcher={mutateQuestionDispatcher}
+						/>
+					)
 				}
 			</section>
 		</>

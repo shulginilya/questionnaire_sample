@@ -162,6 +162,18 @@ const initialState: initialStateType = {
     questions: questionsData
 };
 
+const detectCurrentOpenedQuestion = (id: string, questions: QuestionType[]): string => {
+    let cOpenedQuestion: string = '';
+    for (let i = 0; i < questions.length; i++) {
+		const hashQuestion = questions[i];
+		if (id !== hashQuestion.id && hashQuestion.value === null) {
+			cOpenedQuestion = hashQuestion.id;
+			break;
+		}
+	}
+    return cOpenedQuestion;
+};
+
 export const questionsSlice = createSlice({
     name: "questions",
     initialState,
@@ -171,10 +183,18 @@ export const questionsSlice = createSlice({
             const questionIndex = state.questions.findIndex(q => q.id === id);
             if (questionIndex > -1) {
                 state.questions[questionIndex] = Object.assign({}, state.questions[questionIndex], mutateObject);
+                if (mutateObject.value === null) {
+                    state.currentlyOpenedQuestionId = state.previouslyOpenedQuestionId || id;
+                    state.previouslyOpenedQuestionId = id;
+                } else {
+                    state.previouslyOpenedQuestionId = id;
+                    state.currentlyOpenedQuestionId = detectCurrentOpenedQuestion(id, state.questions);
+                }
             }
         },
         reset: (state) => {
-            const resetQuestions = state.questions.map(q => {
+            const stateQuestionsCopy = JSON.parse(JSON.stringify(state.questions));
+            const resetQuestions = stateQuestionsCopy.map((q: QuestionType) => {
                 const valueObject = {
                     value: null
                 };
@@ -195,8 +215,8 @@ export const {
     mutatePreviouslyOpenedQuestionId,
 } = questionsSlice.actions;
 
-export const selectQuestions = (state: RootState) => state.counter.questions;
-export const selectCurrentOpenQuestion = (state: RootState) => state.counter.currentlyOpenedQuestionId;
-export const selectPreviouslyOpenQuestion = (state: RootState) => state.counter.previouslyOpenedQuestionId;
+export const selectQuestions = (state: RootState) => state.questionnaire.questions;
+export const selectCurrentOpenedQuestionId = (state: RootState) => state.questionnaire.currentlyOpenedQuestionId;
+export const selectPreviouslyOpenedQuestionId = (state: RootState) => state.questionnaire.previouslyOpenedQuestionId;
 
 export default questionsSlice.reducer;

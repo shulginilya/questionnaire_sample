@@ -10,13 +10,15 @@ import styles from './question.module.scss';
 
 interface QuestionComponentType {
     question: QuestionType;
-	isFirstUnansweredQuestionÍd: string | null;
+	currentlyOpenedQuestionId: string;
+	previouslyOpenedQuestionId: string;
 	mutateQuestionDispatcher: ({id, mutateObject}: QuestionActionPayloadType) => void;
 };
 
 const Question: React.FC<QuestionComponentType> = ({
     question,
-	isFirstUnansweredQuestionÍd,
+	currentlyOpenedQuestionId,
+	previouslyOpenedQuestionId,
 	mutateQuestionDispatcher
 }) => {
 	/*
@@ -26,12 +28,19 @@ const Question: React.FC<QuestionComponentType> = ({
 	const [localQuestion, setLocalQuestion] = useState<QuestionType>(question);
 	const [localErrors, setLocalErrors] = useState<String>('');
 	/*
-		We change question collapsability
+		Component did mount
 	*/
 	useEffect(() => {
-		const isExpandedByDefault = (isFirstUnansweredQuestionÍd === question.id) || false;
-		setExpanded(isExpandedByDefault);
-	}, [isFirstUnansweredQuestionÍd]);
+		console.log('refrtesh the questionm');
+		setLocalQuestion(question);
+	}, [question]);
+	/*
+		We change question collapsability
+	*/
+	// useEffect(() => {
+	// 	const isExpandedByDefault = (currentlyOpenedQuestionId === question.id) || false;
+	// 	setExpanded(isExpandedByDefault);
+	// }, [currentlyOpenedQuestionId, previouslyOpenedQuestionId]);
 	/*
 		Submit and cancel question handlers
 	*/
@@ -48,18 +57,31 @@ const Question: React.FC<QuestionComponentType> = ({
 				}
 			});
 			setLocalErrors('');
+			// TODO:
+			// we need to collapse the question
+			// and open the next one
 		} else {
 			setLocalErrors(errorMessages.join('.'));
 		}
 	};
 	const cancelQuestion = () => {
+		// we define mutate object
+		const mutateObject = {
+			value: null
+		};
+		// we decide if we need to mutate currentlyOpenedQuestionId / previouslyOpenedQuestionId
+		// we dispatch redux action
 		mutateQuestionDispatcher({
 			id: localQuestion.id,
 			mutateObject: {
 				value: null
 			}
 		});
+		// we reset local errors
 		setLocalErrors('');
+		// TODO:
+		// we need to collapse the question
+		// and open the next one
 	};
 	/*
 		Update local question copy
@@ -105,7 +127,7 @@ const Question: React.FC<QuestionComponentType> = ({
 		});
 	};
 	/*
-		Generate JKX per each question type
+		Generate JSX per each question type
 	*/
 	const generateAnswerOption = () => {
 		switch(localQuestion.type) {
@@ -115,7 +137,7 @@ const Question: React.FC<QuestionComponentType> = ({
 						<input
 							className={styles.question_type_text__input}
 							type='text'
-							defaultValue={primitiveToDefaultValue()}
+							value={primitiveToDefaultValue()}
 							onChange={(e) => updateQuestionValue(e)}
 						/>
 					</div>
@@ -160,7 +182,7 @@ const Question: React.FC<QuestionComponentType> = ({
 						<input
 							className={styles.question_type_text__input}
 							type='date'
-							defaultValue={primitiveToDefaultValue()}
+							value={primitiveToDefaultValue()}
 							onChange={(e) => updateQuestionValue(e)}
 						/>
 					</div>
@@ -172,7 +194,7 @@ const Question: React.FC<QuestionComponentType> = ({
 						<input
 							className={styles.question_type_text__input}
 							type='number'
-							defaultValue={primitiveToDefaultValue()}
+							value={primitiveToDefaultValue()}
 							onChange={(e) => updateQuestionValue(e)}
 						/>
 					</div>
@@ -217,7 +239,7 @@ const Question: React.FC<QuestionComponentType> = ({
 					>
 						<select 
 							className={styles.question_type_select__input}
-							defaultValue={primitiveToDefaultValue()}
+							value={primitiveToDefaultValue()}
 							onChange={(e) => updateQuestionValue(e)}
 						>
 							{
@@ -254,7 +276,7 @@ const Question: React.FC<QuestionComponentType> = ({
 		return '';
 	};
 	const valueObjectToText = (): string => {
-		const valueObject = localQuestion.value;
+		const valueObject = question.value;
 		let tValue = '';
 		if (valueObject === null) {
 			return '';
@@ -274,11 +296,12 @@ const Question: React.FC<QuestionComponentType> = ({
 		Question is hidden in case if it is unanswered question and it is not the first unanswered question
 		And answered questions are in NOT hidden , but collapsed (preview mode)
 	*/
-	const isHidden = (isFirstUnansweredQuestionÍd !== question.id) && question.value === null;
+	// const isHidden = (currentlyOpenedQuestionId !== question.id) && (question.value === null);
+	const isHidden = false;
 	/*
 		Define the classs which indicates if question is answered or not
 	*/
-	const signClassValue = question.value ? `${styles.question__preview__sign} ${styles.question__preview__sign_answered}` : styles.question__preview__sign;
+	const signClassValue = question.value === null ? styles.question__preview__sign : `${styles.question__preview__sign} ${styles.question__preview__sign_answered}`;
 	/*
 		Render component
 	*/
@@ -305,7 +328,7 @@ const Question: React.FC<QuestionComponentType> = ({
 										)
 									}
 									<div className={styles.question__content__cta}>
-										<button onClick={() => submitQuestion()} className={styles.question__content__cta__btn}>{question.value ? 'Edit' : 'Submit'}</button>
+										<button onClick={() => submitQuestion()} className={styles.question__content__cta__btn}>{question.value === null ? 'Submit' : 'Edit'}</button>
 										<button onClick={() => cancelQuestion()} className={`${styles.question__content__cta__btn} ${styles.question__content__cta__btn_transparent}`}>Cancel</button>
 									</div>
 								</div>
