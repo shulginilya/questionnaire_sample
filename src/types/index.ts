@@ -19,6 +19,8 @@ export enum QuestionTypes {
 };
 
 export interface initialStateType {
+    currentlyOpenedQuestionId: string;
+    previouslyOpenedQuestionId: string;
     questions: QuestionType[]
 };
 

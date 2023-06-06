@@ -47,6 +47,7 @@ const Question: React.FC<QuestionComponentType> = ({
 					value: localQuestion.value
 				}
 			});
+			setLocalErrors('');
 		} else {
 			setLocalErrors(errorMessages.join('.'));
 		}
@@ -58,6 +59,7 @@ const Question: React.FC<QuestionComponentType> = ({
 				value: null
 			}
 		});
+		setLocalErrors('');
 	};
 	/*
 		Update local question copy
@@ -268,11 +270,11 @@ const Question: React.FC<QuestionComponentType> = ({
 		return valueObject;
 	};
 	/*
-		Define if question is completely hidden or not
+		Define if question is completely hidden or not.
+		Question is hidden in case if it is unanswered question and it is not the first unanswered question
+		And answered questions are in NOT hidden , but collapsed (preview mode)
 	*/
-	// question is hidden in case if it is NOT answered and it is not the first unanswered question
-	// const isHidden = !isExpandedByDefault && question.value === null;
-	const isHidden = false;
+	const isHidden = (isFirstUnansweredQuestionÍd !== question.id) && question.value === null;
 	/*
 		Define the classs which indicates if question is answered or not
 	*/
