@@ -3,7 +3,7 @@ import {
 	QuestionActionPayloadType,
 	QuestionTypes,
 	QuestionType,
-	QuestionValueType
+	ValueObjectType,
 } from '@/types';
 import styles from './question.module.scss';
 
@@ -35,7 +35,7 @@ const Question: React.FC<QuestionComponentType> = ({
 	*/
 	const submitQuestion = () => {
 		mutateQuestionDispatcher({
-			id: question.id,
+			id: localQuestion.id,
 			mutateObject: {
 				value: localQuestion.value
 			}
@@ -43,7 +43,7 @@ const Question: React.FC<QuestionComponentType> = ({
 	};
 	const cancelQuestion = () => {
 		mutateQuestionDispatcher({
-			id: question.id,
+			id: localQuestion.id,
 			mutateObject: {
 				value: null
 			}
@@ -52,27 +52,6 @@ const Question: React.FC<QuestionComponentType> = ({
 	/*
 		Update local question copy
 	*/
-	// const updateQuestionValue = (event: React.SyntheticEvent) => {
-	// 	console.log('updateQuestionValue');
-	// 	const targetElement = event.target as HTMLFormElement;
-    //     const value = targetElement.value;
-	// 	// const valueCopy = [...question.value];
-	// 	// valueCopy.push(value);
-	// 	// console.log('newQuestion: ', valueCopy);
-	// 	// const updatedValueObject = {
-	// 	// 	value: valueCopy
-	// 	// };
-	// 	// const updatedLocalQuestion = Object.assign({}, localQuestion, updatedValueObject);
-	// 	setLocalQuestion((prevState: QuestionType) => {
-	// 		const valueCopy = [...prevState.value];
-	// 		valueCopy.push(value);
-	// 		console.log('valueCopy: ', valueCopy);
-	// 		const updatedValueObject = {
-	// 			value: valueCopy
-	// 		};
-	// 		return Object.assign({}, prevState, updatedValueObject);
-	// 	});
-	// };
 	const updateQuestionValue = (event: React.SyntheticEvent) => {
 		const targetElement = event.target as HTMLFormElement;
         const value = targetElement.value;
@@ -83,27 +62,48 @@ const Question: React.FC<QuestionComponentType> = ({
 			return Object.assign({}, prevState, updatedValueObject);
 		});
 	};
-	/*
-		Transform value to the string
-	*/
-	// const transformValue = (value: QuestionValueType) => {
-	// 	if (value) {
-	// 		return value.join(', ');
-	// 	}
-	// 	return '';
-	// };
+	const updateQuestionValueSelections = (event: React.SyntheticEvent, key: string, isMultiSelect: boolean = false) => {
+		const targetElement = event.target as HTMLFormElement;
+        const value = targetElement.value;
+		setLocalQuestion((prevState: QuestionType) => {
+			const valueObjectCopy = localQuestion.value ? JSON.parse(JSON.stringify(localQuestion.value)) : [];
+			let updatedValueObject = {
+				value: valueObjectCopy as ValueObjectType[]
+			};
+			if (isMultiSelect) {
+				const cIndex = valueObjectCopy ? valueObjectCopy.findIndex((v: ValueObjectType) => v.key === key) : -1;
+				if (cIndex > -1) {
+					updatedValueObject.value[cIndex].selected = !updatedValueObject.value[cIndex].selected;
+				} else {
+					updatedValueObject.value.push({
+						key,
+						text: value,
+						selected: true
+					});
+				}
+			} else {
+				updatedValueObject.value = [{
+					key,
+					text: value,
+					selected: true
+				}];
+			}
+			const newState = Object.assign({}, prevState, updatedValueObject);
+			return newState;
+		});
+	};
 	/*
 		Generate JKX per each question type
 	*/
 	const generateAnswerOption = () => {
-		switch(question.type) {
+		switch(localQuestion.type) {
 			case QuestionTypes.text: {
 				return (
 					<div className={`${styles.question_type} ${styles.question_type_text}`}>
 						<input
 							className={styles.question_type_text__input}
 							type='text'
-							defaultValue={question.value || ''}
+							defaultValue={primitiveToDefaultValue()}
 							onChange={(e) => updateQuestionValue(e)}
 						/>
 					</div>
@@ -113,27 +113,31 @@ const Question: React.FC<QuestionComponentType> = ({
 				return (
 					<div className={`${styles.question_type} ${styles.question_type_checkbox}`}>
 						{
-							question.options.map((option) => (
-								<div
-									key={option.key}
-									className={styles.question_type_checkbox__block}
-								>
-									<input
-										className={styles.question_type_checkbox__block__input}
-										id={`${question.id}_${option.key}`}
-										value={option.text}
-										onChange={(e) => updateQuestionValue(e)}
-										type="checkbox"
-									/>
-									<label
-										className={styles.question_type_checkbox__block__label}
-										htmlFor={`${question.id}_${option.key}`}
+							localQuestion.options.map((option) => {
+								const id = `${localQuestion.id}_${option.key}`;
+								return (
+									<div
 										key={option.key}
+										className={styles.question_type_checkbox__block}
 									>
-										{option.text}
-									</label>
-								</div>
-							))
+										<input
+											className={styles.question_type_checkbox__block__input}
+											id={id}
+											value={option.text}
+											checked={isChecked(option.key)}
+											onChange={(e) => updateQuestionValueSelections(e, option.key, true)}
+											type="checkbox"
+										/>
+										<label
+											className={styles.question_type_checkbox__block__label}
+											htmlFor={id}
+											key={option.key}
+										>
+											{option.text}
+										</label>
+									</div>
+								)
+							})
 						}
 					</div>
 				);
@@ -144,7 +148,7 @@ const Question: React.FC<QuestionComponentType> = ({
 						<input
 							className={styles.question_type_text__input}
 							type='date'
-							defaultValue={question.value || ''}
+							defaultValue={primitiveToDefaultValue()}
 							onChange={(e) => updateQuestionValue(e)}
 						/>
 					</div>
@@ -156,7 +160,7 @@ const Question: React.FC<QuestionComponentType> = ({
 						<input
 							className={styles.question_type_text__input}
 							type='number'
-							defaultValue={question.value || ''}
+							defaultValue={primitiveToDefaultValue()}
 							onChange={(e) => updateQuestionValue(e)}
 						/>
 					</div>
@@ -166,26 +170,30 @@ const Question: React.FC<QuestionComponentType> = ({
 				return (
 					<div className={`${styles.question_type} ${styles.question_type_radio}`}>
 						{
-							question.options.map((option) => (
-								<div
-									key={option.key}
-									className={styles.question_type_radio__block}
-								>
-									<input
-										className={styles.question_type_radio__block__input}
-										id={`${question.id}_${option.key}`}
-										name={`${question.id}_radio`}
-										value={option.text}
-										onChange={(e) => updateQuestionValue(e)}
-										type="radio"
-									/>
-    								<label
-										className={styles.question_type_radio__block__label}
+							localQuestion.options.map((option) => {
+								const id = `${localQuestion.id}_${option.key}`;
+								return (
+									<div
 										key={option.key}
-										htmlFor={`${question.id}_${option.key}`}
-									>{option.text}</label>
-								</div>
-							))
+										className={styles.question_type_radio__block}
+									>
+										<input
+											className={styles.question_type_radio__block__input}
+											id={id}
+											name={`${localQuestion.id}_radio`}
+											value={option.text}
+											checked={isChecked(option.key)}
+											onChange={(e) => updateQuestionValueSelections(e, option.key)}
+											type="radio"
+										/>
+										<label
+											className={styles.question_type_radio__block__label}
+											key={option.key}
+											htmlFor={id}
+										>{option.text}</label>
+									</div>
+								)
+							})
 						}
 					</div>
 				);
@@ -200,7 +208,7 @@ const Question: React.FC<QuestionComponentType> = ({
 							onChange={(e) => updateQuestionValue(e)}
 						>
 							{
-								question.options.map((option) => (
+								localQuestion.options.map((option) => (
 									<option key={option.key} value={option.key}>{option.text}</option>
 								))
 							}
@@ -210,6 +218,43 @@ const Question: React.FC<QuestionComponentType> = ({
 			}
 			default: null;
 		}
+	};
+	/*
+		Value transformer
+	*/
+	const isChecked = (key: string): boolean => {
+		const valueObject = localQuestion.value;
+		if (valueObject && typeof valueObject === 'object') {
+			const cIndex = valueObject.findIndex(v => v.key === key);
+			if (cIndex > -1) {
+				return valueObject[cIndex].selected;
+			}
+			return false;
+		}
+		return false;
+	};
+	const primitiveToDefaultValue = (): string => {
+		const valueObject = localQuestion.value;
+		if (valueObject && typeof valueObject !== 'object') {
+			return valueObject;
+		}
+		return '';
+	};
+	const valueObjectToText = (): string => {
+		const valueObject = localQuestion.value;
+		let tValue = '';
+		if (valueObject === null) {
+			return '';
+		}
+		if (typeof valueObject === 'object') {
+			valueObject.forEach(v => {
+				if (v.selected) {
+					tValue += `${v.text}, `;
+				}
+			});
+			return tValue.slice(0, -2);
+		}
+		return valueObject;
 	};
 	/*
 		Define if question is completely hidden or not
@@ -233,13 +278,13 @@ const Question: React.FC<QuestionComponentType> = ({
 							isExpanded ? (
 								<div className={styles.question__content}>
 									<div className={styles.question__content__title}>
-										<p className={styles.question__content__title__text}>{question.title}</p>
+										<p className={styles.question__content__title__text}>{localQuestion.title}</p>
 										<button
 											className={styles.question__content__title__cnt}
 											onClick={() => setExpanded(!isExpanded)}
 										>Close</button>
 									</div>
-									<p className={styles.question__content__desc}>{question.desc}</p>
+									<p className={styles.question__content__desc}>{localQuestion.desc}</p>
 									<div className={styles.question__content__question_body}>{generateAnswerOption()}</div>
 									<div className={styles.question__content__cta}>
 										<button onClick={() => submitQuestion()} className={styles.question__content__cta__btn}>{question.value ? 'Edit' : 'Submit'}</button>
@@ -248,8 +293,8 @@ const Question: React.FC<QuestionComponentType> = ({
 								</div>
 							) : (
 								<div className={styles.question__preview} onClick={() => setExpanded(!isExpanded)}>
-									<span className={styles.question__preview__title}>{question.title}</span>
-									<span className={styles.question__preview__answer}>{question.value}</span>
+									<span className={styles.question__preview__title}>{localQuestion.title}</span>
+									<span className={styles.question__preview__answer}>{valueObjectToText()}</span>
 									<span className={signClassValue}></span>
 								</div>
 							)

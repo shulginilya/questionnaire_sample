@@ -27,9 +27,13 @@ export interface QuestionActionPayloadType {
     mutateObject: GenericObjectType
 };
 
-// export type QuestionValueType = string[] | number[] | [];
+export type QuestionValueType = string | ValueObjectType[] | null;
 
-export type QuestionValueType = string | number | null;
+export interface ValueObjectType {
+    key: string;
+    text: string;
+    selected: boolean;
+};
 
 interface GenericObjectType {
     [key: string]: any;
