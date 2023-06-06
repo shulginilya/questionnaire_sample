@@ -20,11 +20,13 @@ const initialState: initialStateType = {
             validations: [
                 {
                     type: "min",
-                    message: "Your name must not be shorter than 3 characters."
+                    message: "Your name must not be shorter than 3 characters.",
+                    digitsLimitation: 3
                 },
                 {
                     type: "max",
-                    message: "Your name must not be longer than 25 characters."
+                    message: "Your name must not be longer than 25 characters.",
+                    digitsLimitation: 25
                 }
             ]
         },
@@ -138,11 +140,17 @@ const initialState: initialStateType = {
             validations: [
                 {
                     type: "min",
-                    message: "Your number must be only digits and not shorter than 7."
+                    message: "Your number must be not shorter than 7.",
+                    digitsLimitation: 7
                 },
                 {
                     type: "max",
-                    message: "Your number must be only digits and not longer than 12."
+                    message: "Your number must not longer than 12.",
+                    digitsLimitation: 12
+                },
+                {
+                    type: "numbersOnly",
+                    message: "Your answer must be only digits"
                 }
             ]
         }

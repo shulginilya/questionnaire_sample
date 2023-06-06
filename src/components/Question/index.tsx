@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { validateQuestion } from '@/utils/validations';
 import {
 	QuestionActionPayloadType,
 	QuestionTypes,
@@ -23,6 +24,7 @@ const Question: React.FC<QuestionComponentType> = ({
 	*/
 	const [isExpanded, setExpanded] = useState<boolean>(false);
 	const [localQuestion, setLocalQuestion] = useState<QuestionType>(question);
+	const [localErrors, setLocalErrors] = useState<String>('');
 	/*
 		We change question collapsability
 	*/
@@ -34,12 +36,20 @@ const Question: React.FC<QuestionComponentType> = ({
 		Submit and cancel question handlers
 	*/
 	const submitQuestion = () => {
-		mutateQuestionDispatcher({
-			id: localQuestion.id,
-			mutateObject: {
-				value: localQuestion.value
-			}
-		});
+		let errorMessages: string[] = [];
+		if (localQuestion.validations.length > 0) {
+			errorMessages = validateQuestion(localQuestion.validations, localQuestion.value);
+		}
+		if (errorMessages.length === 0) {
+			mutateQuestionDispatcher({
+				id: localQuestion.id,
+				mutateObject: {
+					value: localQuestion.value
+				}
+			});
+		} else {
+			setLocalErrors(errorMessages.join('.'));
+		}
 	};
 	const cancelQuestion = () => {
 		mutateQuestionDispatcher({
@@ -205,11 +215,12 @@ const Question: React.FC<QuestionComponentType> = ({
 					>
 						<select 
 							className={styles.question_type_select__input}
+							defaultValue={primitiveToDefaultValue()}
 							onChange={(e) => updateQuestionValue(e)}
 						>
 							{
 								localQuestion.options.map((option) => (
-									<option key={option.key} value={option.key}>{option.text}</option>
+									<option key={option.key} value={option.text}>{option.text}</option>
 								))
 							}
 						</select>
@@ -286,6 +297,11 @@ const Question: React.FC<QuestionComponentType> = ({
 									</div>
 									<p className={styles.question__content__desc}>{localQuestion.desc}</p>
 									<div className={styles.question__content__question_body}>{generateAnswerOption()}</div>
+									{
+										localErrors && (
+											<div className={styles.question__content__errors}>{localErrors}</div>
+										)
+									}
 									<div className={styles.question__content__cta}>
 										<button onClick={() => submitQuestion()} className={styles.question__content__cta__btn}>{question.value ? 'Edit' : 'Submit'}</button>
 										<button onClick={() => cancelQuestion()} className={`${styles.question__content__cta__btn} ${styles.question__content__cta__btn_transparent}`}>Cancel</button>

@@ -6,7 +6,7 @@ export interface QuestionType {
     options: GenericObjectType[] | [];
     value: QuestionValueType;
     enabled: boolean;
-    validations: GenericObjectType[];
+    validations: ValdationType;
 };
 
 export enum QuestionTypes {
@@ -38,3 +38,9 @@ export interface ValueObjectType {
 interface GenericObjectType {
     [key: string]: any;
 };
+
+export type ValdationType = {
+    type: 'min' | 'max' | 'numbersOnly';
+    message: string;
+    digitsLimitation?: number;
+}[];

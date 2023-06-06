@@ -199,6 +199,10 @@
         &__question_body {
             margin-bottom: 15px;
         }
+        &__errors {
+            color: $base-red;
+            margin-bottom: 10px;
+        }
         &__cta {
             display: flex;
             &__btn {
