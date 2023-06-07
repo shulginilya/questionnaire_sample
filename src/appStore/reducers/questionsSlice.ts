@@ -162,8 +162,16 @@ const initialState: initialStateType = {
     questions: questionsData
 };
 
-const detectCurrentOpenedQuestion = (id: string, questions: QuestionType[]): string => {
+/*
+    We detect the next question to be opened
+    - priority number one : first unanswered question
+    - if we ran out of unanswered questions we go for the previously opened
+    - if we don't have previosuly opened question what we do ???
+    - then we have nothing to assign to currentlyOpenedQuestionId and if we assign ''
+*/
+const detectNextUnansweredQuestion = (id: string, questions: QuestionType[]): string => {
     let cOpenedQuestion: string = '';
+    // the first unanswered question
     for (let i = 0; i < questions.length; i++) {
 		const hashQuestion = questions[i];
 		if (id !== hashQuestion.id && hashQuestion.value === null) {
@@ -184,23 +192,36 @@ export const questionsSlice = createSlice({
             if (questionIndex > -1) {
                 state.questions[questionIndex] = Object.assign({}, state.questions[questionIndex], mutateObject);
                 if (mutateObject.value === null) {
-                    state.currentlyOpenedQuestionId = state.previouslyOpenedQuestionId || id;
+                    // 'çancel' question
+                    // state.currentlyOpenedQuestionId = state.previouslyOpenedQuestionId || id;
+                    state.currentlyOpenedQuestionId = state.previouslyOpenedQuestionId;
                     state.previouslyOpenedQuestionId = id;
                 } else {
-                    state.previouslyOpenedQuestionId = id;
-                    state.currentlyOpenedQuestionId = detectCurrentOpenedQuestion(id, state.questions);
+                    // update / submit question
+                    const nextUnansweredQuestionId = detectNextUnansweredQuestion(id, state.questions);
+                    if (nextUnansweredQuestionId) {
+                        // we found unanswered question
+                        // so previous question turns to the question we just submit
+                        state.previouslyOpenedQuestionId = id;
+                        state.currentlyOpenedQuestionId = nextUnansweredQuestionId;
+                    } else {
+                        // we didn't found unanswered question
+                        state.currentlyOpenedQuestionId = state.previouslyOpenedQuestionId;
+                        state.previouslyOpenedQuestionId = id;
+                    }
                 }
             }
         },
         reset: (state) => {
-            const stateQuestionsCopy = JSON.parse(JSON.stringify(state.questions));
-            const resetQuestions = stateQuestionsCopy.map((q: QuestionType) => {
+            const resetQuestions = state.questions.map((q: QuestionType) => {
                 const valueObject = {
                     value: null
                 };
                 return { ...q, ...valueObject};
             });
             state.questions = resetQuestions;
+            state.currentlyOpenedQuestionId = initialState.currentlyOpenedQuestionId;
+            state.previouslyOpenedQuestionId = initialState.previouslyOpenedQuestionId;
         },
         mutatePreviouslyOpenedQuestionId: (state, action: PayloadAction<string>) => {
             const id = action.payload;

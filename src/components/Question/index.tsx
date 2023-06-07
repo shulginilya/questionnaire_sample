@@ -31,16 +31,15 @@ const Question: React.FC<QuestionComponentType> = ({
 		Component did mount
 	*/
 	useEffect(() => {
-		console.log('refrtesh the questionm');
 		setLocalQuestion(question);
 	}, [question]);
 	/*
 		We change question collapsability
 	*/
-	// useEffect(() => {
-	// 	const isExpandedByDefault = (currentlyOpenedQuestionId === question.id) || false;
-	// 	setExpanded(isExpandedByDefault);
-	// }, [currentlyOpenedQuestionId, previouslyOpenedQuestionId]);
+	useEffect(() => {
+		const isExpandedByDefault = (currentlyOpenedQuestionId === question.id) || false;
+		setExpanded(isExpandedByDefault);
+	}, [currentlyOpenedQuestionId, previouslyOpenedQuestionId]);
 	/*
 		Submit and cancel question handlers
 	*/
@@ -57,19 +56,11 @@ const Question: React.FC<QuestionComponentType> = ({
 				}
 			});
 			setLocalErrors('');
-			// TODO:
-			// we need to collapse the question
-			// and open the next one
 		} else {
 			setLocalErrors(errorMessages.join('.'));
 		}
 	};
 	const cancelQuestion = () => {
-		// we define mutate object
-		const mutateObject = {
-			value: null
-		};
-		// we decide if we need to mutate currentlyOpenedQuestionId / previouslyOpenedQuestionId
 		// we dispatch redux action
 		mutateQuestionDispatcher({
 			id: localQuestion.id,
@@ -79,9 +70,6 @@ const Question: React.FC<QuestionComponentType> = ({
 		});
 		// we reset local errors
 		setLocalErrors('');
-		// TODO:
-		// we need to collapse the question
-		// and open the next one
 	};
 	/*
 		Update local question copy
@@ -296,8 +284,7 @@ const Question: React.FC<QuestionComponentType> = ({
 		Question is hidden in case if it is unanswered question and it is not the first unanswered question
 		And answered questions are in NOT hidden , but collapsed (preview mode)
 	*/
-	// const isHidden = (currentlyOpenedQuestionId !== question.id) && (question.value === null);
-	const isHidden = false;
+	const isHidden = (currentlyOpenedQuestionId !== question.id) && (question.value === null);
 	/*
 		Define the classs which indicates if question is answered or not
 	*/
